@@ -1,0 +1,66 @@
+To implement the Snake Game as described in the SRS, we will define several classes and functions. The game will be developed using Python and the `pygame` module. Below is the structured solution:
+
+### Required Module
+- `pygame`: This module will be used for creating the game window, handling events, and rendering graphics.
+
+### Classes and Functions
+
+#### Game
+- **Description**: Manages the overall game state, including initialization, game loop, and handling user inputs.
+  
+  - **Attributes**:
+    - `screen`: The game window where the game is rendered.
+    - `clock`: Manages the game's frame rate.
+    - `snake`: An instance of the `Snake` class.
+    - `apple`: An instance of the `Apple` class.
+    - `running`: A boolean indicating if the game is currently running.
+    - `score`: The current score of the player.
+
+  - **Functions**:
+    - `__init__(self)`: Initializes the game, setting up the screen, clock, snake, and apple.
+    - `start_game(self)`: Starts the game loop when the space button is pressed.
+    - `handle_input(self)`: Processes user inputs for controlling the snake and starting the game.
+    - `update(self)`: Updates the game state, including moving the snake and checking for collisions.
+    - `render(self)`: Renders the game elements (snake, apple) on the screen.
+    - `end_game(self)`: Ends the game when the snake collides with itself or the border.
+    - `exit_game(self)`: Closes the game application.
+
+#### Snake
+- **Description**: Represents the snake controlled by the player, handling movement and growth.
+
+  - **Attributes**:
+    - `body`: A list of tuples representing the positions of the snake's segments.
+    - `direction`: The current direction of the snake's movement.
+    - `color_head`: The color of the snake's head.
+    - `color_body`: The color of the snake's body.
+
+  - **Functions**:
+    - `__init__(self)`: Initializes the snake with a starting position and direction.
+    - `move(self)`: Moves the snake in the current direction.
+    - `change_direction(self, new_direction: str)`: Changes the snake's direction, preventing 180-degree turns.
+    - `grow(self)`: Increases the size of the snake by adding a new segment.
+    - `check_collision(self) -> bool`: Checks if the snake has collided with itself or the game border.
+
+#### Apple
+- **Description**: Represents the apple that the snake consumes to grow and increase the score.
+
+  - **Attributes**:
+    - `position`: The current position of the apple on the game area.
+    - `color`: The color of the apple.
+
+  - **Functions**:
+    - `__init__(self)`: Initializes the apple with a random position.
+    - `relocate(self, snake_body: list)`: Places the apple at a new random position, ensuring it does not overlap with the snake.
+
+#### Utility Functions
+- **Description**: Helper functions for game operations.
+
+  - **Functions**:
+    - `random_position(exclude: list) -> tuple`: Generates a random position on the game area, excluding positions occupied by the snake.
+
+### Notes
+- The `pygame` module must be imported to handle graphics and user input.
+- The game window is set to a resolution of 600x600 pixels.
+- The game loop will ensure smooth gameplay by maintaining a consistent frame rate.
+- The snake's movement is controlled using the arrow keys, and the game starts with the space button.
+- The game ends when the snake collides with itself or the border, and the score is displayed.

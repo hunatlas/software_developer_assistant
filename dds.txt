@@ -1,0 +1,176 @@
+To implement the Snake Game as described in the SRS, we will define several classes and functions. The primary classes will include `Game`, `Snake`, `Apple`, and `GameArea`. Each class will encapsulate specific functionalities and attributes necessary for the game. The `pygame` module will be imported to handle graphics and user input.
+
+### Classes and Functions
+
+#### Game
+- **Description**: Manages the overall game flow, including starting, running, and ending the game.
+
+    - `screen`: `pygame.Surface` : The game window where all elements are drawn.
+    - `clock`: `pygame.time.Clock` : Manages the game's frame rate.
+    - `snake`: `Snake` : The snake object controlled by the player.
+    - `apple`: `Apple` : The apple object that the snake consumes.
+    - `running`: `bool` : Indicates whether the game is currently running.
+    - `score`: `int` : Tracks the number of apples consumed.
+
+    - `__init__()`: Initializes the game components.
+      - **Pseudocode**:
+        ```
+        Initialize pygame
+        Set screen to a 600x600 window
+        Create a clock object
+        Initialize snake and apple objects
+        Set running to False
+        Set score to 0
+        ```
+
+    - `start_game()`: Starts the game loop.
+      - **Pseudocode**:
+        ```
+        Set running to True
+        While running is True:
+            Handle events
+            Update game state
+            Render game elements
+            Tick the clock
+        ```
+
+    - `handle_events()`: Handles user input and game events.
+      - **Pseudocode**:
+        ```
+        For each event in pygame event queue:
+            If event is QUIT:
+                Set running to False
+            If event is KEYDOWN:
+                If key is SPACE:
+                    Start game
+                If key is an arrow key:
+                    Change snake direction
+        ```
+
+    - `update()`: Updates the game state, including snake movement and collision detection.
+      - **Pseudocode**:
+        ```
+        Move the snake
+        Check for collision with apple
+        If collision with apple:
+            Increase score
+            Grow snake
+            Place new apple
+        Check for collision with borders or self
+        If collision detected:
+            End game
+        ```
+
+    - `render()`: Renders the game elements on the screen.
+      - **Pseudocode**:
+        ```
+        Fill screen with black
+        Draw snake
+        Draw apple
+        Update display
+        ```
+
+    - `end_game()`: Ends the game and displays the final score.
+      - **Pseudocode**:
+        ```
+        Set running to False
+        Display final score
+        ```
+
+#### Snake
+- **Description**: Represents the snake controlled by the player.
+
+    - `body`: `List[Tuple[int, int]]` : List of coordinates representing the snake's body parts.
+    - `direction`: `Tuple[int, int]` : Current direction of the snake's movement.
+
+    - `__init__()`: Initializes the snake with a head and one body part.
+      - **Pseudocode**:
+        ```
+        Set initial position for head and body
+        Set initial direction to move right
+        ```
+
+    - `move()`: Moves the snake in the current direction.
+      - **Pseudocode**:
+        ```
+        Calculate new head position based on direction
+        Insert new head position at the start of the body list
+        Remove last element of the body list
+        ```
+
+    - `grow()`: Increases the snake's length by one unit.
+      - **Pseudocode**:
+        ```
+        Append a new body part at the end of the body list
+        ```
+
+    - `change_direction(new_direction: Tuple[int, int])`: Changes the snake's direction if not a 180-degree turn.
+      - **Pseudocode**:
+        ```
+        If new_direction is not opposite of current direction:
+            Set direction to new_direction
+        ```
+
+    - `check_collision_with_self() -> bool`: Checks if the snake has collided with itself.
+      - **Pseudocode**:
+        ```
+        If head position is in body list (excluding head):
+            Return True
+        Else:
+            Return False
+        ```
+
+#### Apple
+- **Description**: Represents the apple that the snake consumes.
+
+    - `position`: `Tuple[int, int]` : The current position of the apple on the game area.
+
+    - `__init__()`: Initializes the apple at a random position.
+      - **Pseudocode**:
+        ```
+        Call place_apple()
+        ```
+
+    - `place_apple(snake_body: List[Tuple[int, int]])`: Places the apple at a random position not occupied by the snake.
+      - **Pseudocode**:
+        ```
+        While True:
+            Generate random position within game area
+            If position is not in snake_body:
+                Set position to generated position
+                Break
+        ```
+
+#### GameArea
+- **Description**: Manages the game area properties and rendering.
+
+    - `width`: `int` : Width of the game area (600 pixels).
+    - `height`: `int` : Height of the game area (600 pixels).
+
+    - `__init__()`: Initializes the game area dimensions.
+      - **Pseudocode**:
+        ```
+        Set width to 600
+        Set height to 600
+        ```
+
+    - `draw_snake(screen: pygame.Surface, snake: Snake)`: Draws the snake on the game area.
+      - **Pseudocode**:
+        ```
+        For each segment in snake body:
+            If segment is head:
+                Draw dark green rectangle
+            Else:
+                Draw light green rectangle
+        ```
+
+    - `draw_apple(screen: pygame.Surface, apple: Apple)`: Draws the apple on the game area.
+      - **Pseudocode**:
+        ```
+        Draw red rectangle at apple position
+        ```
+
+### Module Import
+- `pygame`: Required for handling graphics, events, and game loop.
+
+This structured approach provides a clear blueprint for implementing the Snake Game, ensuring that each component is well-defined and the overall system is cohesive.

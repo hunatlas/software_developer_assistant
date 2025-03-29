@@ -1,0 +1,160 @@
+Prefix:
+The function `start_game` is responsible for initiating and managing the main game loop. It handles user inputs, updates the game state, renders the game, and maintains a consistent frame rate. The function is refactored to adhere to SOLID principles, improve error handling, and enhance readability.
+
+Imports:
+import pygame
+import sys
+
+
+Code:
+class Game:
+    window_size: tuple[int, int] = (600, 600)  # The size of the game window
+    frame_rate: int = 15  # The frame rate for the game
+
+    def __init__(self):
+        """
+        Initializes the game, setting up the game window and initial state.
+        """
+        pygame.init()
+        self.screen = pygame.display.set_mode(self.window_size)
+        pygame.display.set_caption('Snake Game')
+        self.clock = pygame.time.Clock()
+        self.game_over = False
+        self.snake = Snake((300, 300))  # Initialize snake at the center
+        self.apple = Apple(self.snake.body)  # Initialize apple not on the snake
+        self.ui = UserInterface()
+
+    def start_game(self):
+        """
+        Starts the game loop, handling events and updating the game state.
+        """
+        try:
+            while not self.game_over:
+                self.handle_events()
+                self.update_game_state()
+                self.render_game()
+                self.clock.tick(self.frame_rate)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            self.end_game()
+
+    def handle_events(self):
+        """
+        Handles user input events.
+        """
+        self.ui.handle_input(self.snake)
+
+    def update_game_state(self):
+        """
+        Updates the game state, including snake movement and collision checks.
+        """
+        self.snake.move()
+        if self.snake.check_collision():
+            self.game_over = True
+        if self.snake.body[0] == self.apple.position:
+            self.snake.grow()
+            self.apple.relocate(self.snake.body)
+
+    def render_game(self):
+        """
+        Renders the current game state to the screen.
+        """
+        self.ui.render(self, self.snake, self.apple)
+
+    def end_game(self):
+        """
+        Ends the game and displays the final score.
+        """
+        print(f"Game Over! Your score: {len(self.snake.body) - 1}")
+        pygame.quit()
+        sys.exit()
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch, MagicMock
+import pygame
+import sys
+
+# Assuming the Game, Snake, Apple, and UserInterface classes are defined in a module named game_module
+from game_module import Game, Snake, Apple, UserInterface
+
+class TestGame(unittest.TestCase):
+
+    def setUp(self):
+        # Mocking the Snake, Apple, and UserInterface classes
+        self.mock_snake = MagicMock(spec=Snake)
+        self.mock_apple = MagicMock(spec=Apple)
+        self.mock_ui = MagicMock(spec=UserInterface)
+
+        # Patching the Game class to use the mocked classes
+        with patch('game_module.Snake', return_value=self.mock_snake), \
+             patch('game_module.Apple', return_value=self.mock_apple), \
+             patch('game_module.UserInterface', return_value=self.mock_ui):
+            self.game = Game()
+
+    @patch('pygame.quit')
+    @patch('sys.exit')
+    def test_start_game_handles_exception(self, mock_sys_exit, mock_pygame_quit):
+        # Simulate an exception during the game loop
+        self.mock_snake.move.side_effect = Exception("Test Exception")
+
+        # Run the start_game method
+        self.game.start_game()
+
+        # Check if the game ends gracefully
+        self.assertTrue(self.game.game_over)
+        mock_pygame_quit.assert_called_once()
+        mock_sys_exit.assert_called_once()
+
+    @patch('pygame.quit')
+    @patch('sys.exit')
+    def test_end_game(self, mock_sys_exit, mock_pygame_quit):
+        # Run the end_game method
+        self.game.end_game()
+
+        # Check if pygame.quit and sys.exit are called
+        mock_pygame_quit.assert_called_once()
+        mock_sys_exit.assert_called_once()
+
+    def test_handle_events_calls_ui_handle_input(self):
+        # Run the handle_events method
+        self.game.handle_events()
+
+        # Check if the UI's handle_input method is called with the snake
+        self.mock_ui.handle_input.assert_called_once_with(self.mock_snake)
+
+    def test_update_game_state_snake_collision(self):
+        # Simulate snake collision
+        self.mock_snake.check_collision.return_value = True
+
+        # Run the update_game_state method
+        self.game.update_game_state()
+
+        # Check if the game is set to over
+        self.assertTrue(self.game.game_over)
+
+    def test_update_game_state_snake_eats_apple(self):
+        # Simulate snake eating the apple
+        self.mock_snake.body = [(300, 300)]
+        self.mock_apple.position = (300, 300)
+        self.mock_snake.check_collision.return_value = False
+
+        # Run the update_game_state method
+        self.game.update_game_state()
+
+        # Check if the snake grows and apple relocates
+        self.mock_snake.grow.assert_called_once()
+        self.mock_apple.relocate.assert_called_once_with(self.mock_snake.body)
+
+    def test_render_game_calls_ui_render(self):
+        # Run the render_game method
+        self.game.render_game()
+
+        # Check if the UI's render method is called with the game, snake, and apple
+        self.mock_ui.render.assert_called_once_with(self.game, self.mock_snake, self.mock_apple)
+
+if __name__ == '__main__':
+    unittest.main()
+```

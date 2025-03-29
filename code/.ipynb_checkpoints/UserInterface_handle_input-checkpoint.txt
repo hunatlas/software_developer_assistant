@@ -1,0 +1,92 @@
+Prefix:
+The function `handle_input` in the `UserInterface` class is responsible for handling user input to control the snake's movement direction based on arrow key presses. It checks for key events and updates the snake's direction accordingly, ensuring that the snake does not make a 180-degree turn.
+
+Imports:
+import pygame
+
+Code:
+    def handle_input(self, snake: Snake) -> None:
+        """
+        Handles user input to control the snake's direction.
+
+        Parameters:
+        - snake (Snake): The snake object whose direction is to be controlled.
+
+        Returns:
+        - None
+        """
+        direction_map = {
+            pygame.K_UP: 'N',
+            pygame.K_DOWN: 'S',
+            pygame.K_LEFT: 'W',
+            pygame.K_RIGHT: 'E'
+        }
+        try:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    direction = direction_map.get(event.key)
+                    if direction:
+                        snake.change_direction(direction)
+        except Exception as e:
+            print(f"An error occurred while handling input: {e}")
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch, MagicMock
+import pygame
+
+# Assuming the Snake class and UserInterface class are defined elsewhere
+# and imported here for testing purposes.
+
+class TestHandleInput(unittest.TestCase):
+
+    def setUp(self):
+        self.snake = MagicMock()
+        self.ui = UserInterface()
+
+    @patch('pygame.event.get')
+    def test_handle_input_up_key(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYDOWN, key=pygame.K_UP)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_called_once_with('N')
+
+    @patch('pygame.event.get')
+    def test_handle_input_down_key(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYDOWN, key=pygame.K_DOWN)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_called_once_with('S')
+
+    @patch('pygame.event.get')
+    def test_handle_input_left_key(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYDOWN, key=pygame.K_LEFT)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_called_once_with('W')
+
+    @patch('pygame.event.get')
+    def test_handle_input_right_key(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYDOWN, key=pygame.K_RIGHT)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_called_once_with('E')
+
+    @patch('pygame.event.get')
+    def test_handle_input_no_key_event(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = []
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_not_called()
+
+    @patch('pygame.event.get')
+    def test_handle_input_non_keydown_event(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYUP, key=pygame.K_UP)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_not_called()
+
+    @patch('pygame.event.get')
+    def test_handle_input_invalid_key(self, mock_pygame_event_get):
+        mock_pygame_event_get.return_value = [MagicMock(type=pygame.KEYDOWN, key=pygame.K_a)]
+        self.ui.handle_input(self.snake)
+        self.snake.change_direction.assert_not_called()
+
+if __name__ == '__main__':
+    unittest.main()
+```

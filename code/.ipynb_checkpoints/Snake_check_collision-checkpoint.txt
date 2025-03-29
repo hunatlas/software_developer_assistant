@@ -1,0 +1,113 @@
+Prefix:
+This function checks if the snake has collided with itself or the borders of the game area. It returns True if a collision is detected, otherwise False. The function ensures that the snake's head is within the game boundaries and does not overlap with any part of its body.
+
+Imports:
+from typing import List, Tuple
+
+Code:
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+
+    def __init__(self, initial_position: Tuple[int, int], game_bounds: Tuple[int, int] = (600, 600)):
+        """
+        Initializes the snake with a starting position and direction.
+        Ensures the initial position is within the game boundaries.
+
+        :param initial_position: The starting position of the snake's head.
+        :param game_bounds: The boundaries of the game area (width, height).
+        """
+        self.body: List[Tuple[int, int]] = [initial_position]
+        self.direction: str = 'E'  # Default direction is East
+        self.game_bounds = game_bounds
+        if not self._is_within_bounds(initial_position):
+            raise ValueError("Initial position is out of game bounds.")
+
+    def check_collision(self) -> bool:
+        """
+        Checks if the snake has collided with itself or the borders.
+        Returns True if a collision occurred, otherwise False.
+
+        :return: Boolean indicating if a collision has occurred.
+        """
+        return self._check_boundary_collision() or self._check_self_collision()
+
+    def _check_boundary_collision(self) -> bool:
+        """
+        Checks if the snake's head is out of the game area bounds.
+
+        :return: Boolean indicating if the snake's head is out of bounds.
+        """
+        head_x, head_y = self.body[0]
+        return not self._is_within_bounds((head_x, head_y))
+
+    def _check_self_collision(self) -> bool:
+        """
+        Checks if the snake's head collides with any part of its body.
+
+        :return: Boolean indicating if the snake's head collides with its body.
+        """
+        head = self.body[0]
+        body_set = set(self.body[1:])
+        return head in body_set
+
+    def _is_within_bounds(self, position: Tuple[int, int]) -> bool:
+        """
+        Checks if a given position is within the game area bounds.
+
+        :param position: The position to check.
+        :return: Boolean indicating if the position is within bounds.
+        """
+        x, y = position
+        max_x, max_y = self.game_bounds
+        return 0 <= x < max_x and 0 <= y < max_y
+
+Tests:
+```python
+import unittest
+from typing import List, Tuple
+from unittest.mock import patch
+
+class TestSnakeCollision(unittest.TestCase):
+
+    def test_initial_position_within_bounds(self):
+        snake = Snake((100, 100))
+        self.assertFalse(snake.check_collision())
+
+    def test_initial_position_out_of_bounds_raises_error(self):
+        with self.assertRaises(ValueError):
+            Snake((700, 700))
+
+    def test_collision_with_boundary(self):
+        snake = Snake((599, 599))
+        snake.body = [(600, 600)]  # Simulate moving out of bounds
+        self.assertTrue(snake.check_collision())
+
+    def test_no_collision_with_boundary(self):
+        snake = Snake((599, 599))
+        self.assertFalse(snake.check_collision())
+
+    def test_self_collision(self):
+        snake = Snake((100, 100))
+        snake.body = [(100, 100), (100, 101), (100, 102), (100, 100)]  # Head collides with body
+        self.assertTrue(snake.check_collision())
+
+    def test_no_self_collision(self):
+        snake = Snake((100, 100))
+        snake.body = [(100, 100), (100, 101), (100, 102)]
+        self.assertFalse(snake.check_collision())
+
+    def test_boundary_collision_at_zero(self):
+        snake = Snake((0, 0))
+        snake.body = [(-1, 0)]  # Simulate moving out of bounds
+        self.assertTrue(snake.check_collision())
+
+    def test_no_collision_with_empty_body(self):
+        snake = Snake((100, 100))
+        snake.body = [(100, 100)]  # Only head, no body
+        self.assertFalse(snake.check_collision())
+
+if __name__ == '__main__':
+    unittest.main()
+```

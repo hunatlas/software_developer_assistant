@@ -1,0 +1,112 @@
+Prefix:
+This function changes the direction of the snake, ensuring that it does not make a 180-degree turn directly. The snake's direction is updated only if the new direction is not opposite to the current direction.
+
+Imports:
+from __future__ import annotations
+
+Code:
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+    body: list[tuple[int, int]]  # List of positions representing the snake's body
+    direction: str  # Current direction of the snake ('N', 'E', 'S', 'W')
+
+    def __init__(self, initial_position: tuple[int, int]):
+        """
+        Initializes the snake with a starting position and direction.
+
+        :param initial_position: The initial position of the snake's head.
+        """
+        self.body = [initial_position]
+        self.direction = 'E'  # Default initial direction
+
+    def change_direction(self, new_direction: str):
+        """
+        Changes the direction of the snake, preventing 180-degree turns.
+
+        :param new_direction: The new direction for the snake ('N', 'E', 'S', 'W').
+        :raises ValueError: If the new direction is not valid.
+        """
+        # Define valid directions
+        valid_directions = {'N', 'E', 'S', 'W'}
+
+        # Check if the new direction is valid
+        if new_direction not in valid_directions:
+            raise ValueError(f"Invalid direction: {new_direction}. Must be one of {valid_directions}.")
+
+        # Define opposite directions
+        opposite_directions = {
+            'N': 'S',
+            'S': 'N',
+            'E': 'W',
+            'W': 'E'
+        }
+
+        # Check if the new direction is not opposite to the current direction
+        if new_direction != opposite_directions[self.direction]:
+            self.direction = new_direction
+
+# Example usage:
+# snake = Snake((5, 5))
+# snake.change_direction('N')  # Changes direction to North
+# snake.change_direction('S')  # Will not change direction because it's opposite to North
+# print(snake.direction)  # Output: 'N'
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch
+
+class TestSnakeChangeDirection(unittest.TestCase):
+
+    def setUp(self):
+        self.snake = Snake((5, 5))
+
+    def test_initial_direction_is_east(self):
+        self.assertEqual(self.snake.direction, 'E')
+
+    def test_change_direction_to_north(self):
+        self.snake.change_direction('N')
+        self.assertEqual(self.snake.direction, 'N')
+
+    def test_change_direction_to_south_from_east(self):
+        self.snake.change_direction('S')
+        self.assertEqual(self.snake.direction, 'S')
+
+    def test_change_direction_to_west_from_east(self):
+        self.snake.change_direction('W')
+        self.assertEqual(self.snake.direction, 'W')
+
+    def test_change_direction_to_opposite_north(self):
+        self.snake.change_direction('N')
+        self.snake.change_direction('S')
+        self.assertEqual(self.snake.direction, 'N')  # Should not change to South
+
+    def test_change_direction_to_opposite_south(self):
+        self.snake.change_direction('S')
+        self.snake.change_direction('N')
+        self.assertEqual(self.snake.direction, 'S')  # Should not change to North
+
+    def test_change_direction_to_opposite_east(self):
+        self.snake.change_direction('W')
+        self.snake.change_direction('E')
+        self.assertEqual(self.snake.direction, 'W')  # Should not change to East
+
+    def test_change_direction_to_opposite_west(self):
+        self.snake.change_direction('E')
+        self.snake.change_direction('W')
+        self.assertEqual(self.snake.direction, 'E')  # Should not change to West
+
+    def test_invalid_direction_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            self.snake.change_direction('A')
+
+    def test_invalid_direction_message(self):
+        with self.assertRaises(ValueError) as context:
+            self.snake.change_direction('A')
+        self.assertEqual(str(context.exception), "Invalid direction: A. Must be one of {'N', 'E', 'S', 'W'}.")
+
+if __name__ == '__main__':
+    unittest.main()
+```

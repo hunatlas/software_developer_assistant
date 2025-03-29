@@ -1,0 +1,135 @@
+```python
+# Import necessary module
+import pygame
+
+# Class Definitions
+
+class Game:
+    """
+    Represents the Snake game, managing the game loop, initialization, and game state.
+    """
+    window_size: tuple[int, int]
+    frame_rate: int
+    high_score: int
+
+    def __init__(self, window_size: tuple[int, int] = (600, 600), frame_rate: int = 10):
+        """
+        Initializes the game with a specified window size and frame rate.
+        """
+        self.window_size = window_size
+        self.frame_rate = frame_rate
+        self.high_score = 0
+
+    def start_game(self) -> None:
+        """
+        Starts the game loop and initializes game components.
+        """
+        pass
+
+    def end_game(self) -> None:
+        """
+        Ends the game and displays the player's score.
+        """
+        pass
+
+    def exit_game(self) -> None:
+        """
+        Closes the game application.
+        """
+        pass
+
+
+class Snake:
+    """
+    Represents the snake in the game, managing its position, movement, and growth.
+    """
+    body: list[tuple[int, int]]
+    direction: str
+
+    def __init__(self, initial_position: tuple[int, int]):
+        """
+        Initializes the snake with a starting position and default direction.
+        """
+        self.body = [initial_position]
+        self.direction = 'EAST'
+
+    def move(self) -> None:
+        """
+        Moves the snake in the current direction.
+        """
+        pass
+
+    def change_direction(self, new_direction: str) -> None:
+        """
+        Changes the snake's direction, ensuring no 180-degree turns.
+        """
+        pass
+
+    def grow(self) -> None:
+        """
+        Increases the snake's size by adding a new segment.
+        """
+        pass
+
+    def check_collision(self) -> bool:
+        """
+        Checks if the snake has collided with itself or the game area borders.
+        Returns True if a collision occurs, otherwise False.
+        """
+        pass
+
+
+class Apple:
+    """
+    Represents an apple in the game, managing its position.
+    """
+    position: tuple[int, int]
+
+    def __init__(self, game_area_size: tuple[int, int]):
+        """
+        Initializes the apple at a random position within the game area.
+        """
+        self.position = self.generate_random_position(game_area_size)
+
+    def generate_random_position(self, game_area_size: tuple[int, int]) -> tuple[int, int]:
+        """
+        Generates a random position for the apple within the game area, ensuring it does not overlap with the snake.
+        """
+        pass
+
+
+class GameArea:
+    """
+    Represents the game area, managing the display and rendering of game elements.
+    """
+    background_color: tuple[int, int, int]
+    snake_head_color: tuple[int, int, int]
+    snake_body_color: tuple[int, int, int]
+    apple_color: tuple[int, int, int]
+
+    def __init__(self):
+        """
+        Initializes the game area with specified colors for the background, snake, and apple.
+        """
+        self.background_color = (0, 0, 0)  # Black
+        self.snake_head_color = (0, 100, 0)  # Dark Green
+        self.snake_body_color = (144, 238, 144)  # Light Green
+        self.apple_color = (255, 0, 0)  # Red
+
+    def render(self, snake: Snake, apple: Apple) -> None:
+        """
+        Renders the game area, snake, and apple on the screen.
+        """
+        pass
+
+# Note: The actual implementation of these classes and methods will involve using the pygame module to handle graphics, events, and game logic.
+```
+
+### Explanation:
+
+- **Game**: Manages the overall game state, including starting, ending, and exiting the game. It also tracks the high score.
+- **Snake**: Manages the snake's position, movement, and growth. It ensures the snake cannot make 180-degree turns and checks for collisions.
+- **Apple**: Manages the apple's position, ensuring it appears randomly within the game area and not on the snake.
+- **GameArea**: Manages the rendering of the game elements, including the background, snake, and apple, using specified colors.
+
+The `pygame` module is imported as it is required for handling graphics and events in the game. Each class and method is designed to fulfill specific functional requirements outlined in the SRS.

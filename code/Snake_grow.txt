@@ -1,0 +1,146 @@
+Prefix:
+The `grow` function is responsible for increasing the size of the snake by adding a new segment in the direction it is currently moving. This function ensures that the snake grows naturally by extending its body in the direction of movement. The function also ensures that the snake always has at least one segment, which is the head.
+
+Imports:
+from typing import List, Tuple
+
+Code:
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+    body: List[Tuple[int, int]]  # List of positions representing the snake's body
+    direction: str  # Current direction of the snake ('N', 'E', 'S', 'W')
+
+    def __init__(self, initial_position: Tuple[int, int]):
+        """
+        Initializes the snake with a starting position and direction.
+        """
+        self.body = [initial_position]
+        self.direction = 'E'  # Default direction is east
+
+    def _calculate_new_head(self) -> Tuple[int, int]:
+        """
+        Calculates the new head position based on the current direction.
+
+        Returns:
+            Tuple[int, int]: The new head position.
+        """
+        head_x, head_y = self.body[0]
+
+        if self.direction == 'N':
+            return (head_x, head_y - 1)
+        elif self.direction == 'E':
+            return (head_x + 1, head_y)
+        elif self.direction == 'S':
+            return (head_x, head_y + 1)
+        elif self.direction == 'W':
+            return (head_x - 1, head_y)
+        else:
+            raise ValueError("Invalid direction: {}".format(self.direction))
+
+    def grow(self):
+        """
+        Grows the snake by adding a new segment in the direction it is moving.
+        """
+        if not self.body:
+            raise ValueError("The snake must have at least one segment.")
+
+        new_head = self._calculate_new_head()
+        self.body.insert(0, new_head)
+
+# Example usage
+snake = Snake((5, 5))
+snake.grow()
+print(snake.body)  # Output: [(6, 5), (5, 5)]
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch
+from typing import List, Tuple
+
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+    body: List[Tuple[int, int]]  # List of positions representing the snake's body
+    direction: str  # Current direction of the snake ('N', 'E', 'S', 'W')
+
+    def __init__(self, initial_position: Tuple[int, int]):
+        """
+        Initializes the snake with a starting position and direction.
+        """
+        self.body = [initial_position]
+        self.direction = 'E'  # Default direction is east
+
+    def _calculate_new_head(self) -> Tuple[int, int]:
+        """
+        Calculates the new head position based on the current direction.
+
+        Returns:
+            Tuple[int, int]: The new head position.
+        """
+        head_x, head_y = self.body[0]
+
+        if self.direction == 'N':
+            return (head_x, head_y - 1)
+        elif self.direction == 'E':
+            return (head_x + 1, head_y)
+        elif self.direction == 'S':
+            return (head_x, head_y + 1)
+        elif self.direction == 'W':
+            return (head_x - 1, head_y)
+        else:
+            raise ValueError("Invalid direction: {}".format(self.direction))
+
+    def grow(self):
+        """
+        Grows the snake by adding a new segment in the direction it is moving.
+        """
+        if not self.body:
+            raise ValueError("The snake must have at least one segment.")
+
+        new_head = self._calculate_new_head()
+        self.body.insert(0, new_head)
+
+class TestSnakeGrowFunction(unittest.TestCase):
+
+    def test_grow_in_east_direction(self):
+        snake = Snake((5, 5))
+        snake.grow()
+        self.assertEqual(snake.body, [(6, 5), (5, 5)])
+
+    def test_grow_in_north_direction(self):
+        snake = Snake((5, 5))
+        snake.direction = 'N'
+        snake.grow()
+        self.assertEqual(snake.body, [(5, 4), (5, 5)])
+
+    def test_grow_in_south_direction(self):
+        snake = Snake((5, 5))
+        snake.direction = 'S'
+        snake.grow()
+        self.assertEqual(snake.body, [(5, 6), (5, 5)])
+
+    def test_grow_in_west_direction(self):
+        snake = Snake((5, 5))
+        snake.direction = 'W'
+        snake.grow()
+        self.assertEqual(snake.body, [(4, 5), (5, 5)])
+
+    def test_grow_with_no_body_raises_error(self):
+        snake = Snake((5, 5))
+        snake.body = []
+        with self.assertRaises(ValueError):
+            snake.grow()
+
+    def test_grow_with_invalid_direction_raises_error(self):
+        snake = Snake((5, 5))
+        snake.direction = 'X'
+        with self.assertRaises(ValueError):
+            snake.grow()
+
+if __name__ == '__main__':
+    unittest.main()
+```

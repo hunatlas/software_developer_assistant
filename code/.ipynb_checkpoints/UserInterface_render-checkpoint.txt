@@ -1,0 +1,164 @@
+Prefix:
+This function renders the current game state to the screen. It clears the screen, draws the snake (with different colors for head and body), draws the apple, and updates the display. The implementation follows the pygame drawing conventions and ensures proper visualization of all game elements.
+
+Imports:
+import pygame
+
+Code:
+def render(self, game: 'Game', snake: 'Snake', apple: 'Apple') -> None:
+    """
+    Renders the current game state to the screen.
+    
+    Args:
+        game: Game object containing game settings and state
+        snake: Snake object containing the snake's body and direction
+        apple: Apple object containing the apple's position
+    
+    Returns:
+        None
+        
+    Raises:
+        RuntimeError: If pygame is not initialized or screen cannot be obtained
+    """
+    # Define colors as constants
+    BLACK = (0, 0, 0)
+    DARK_GREEN = (0, 100, 0)
+    LIGHT_GREEN = (0, 255, 0)
+    RED = (255, 0, 0)
+    
+    # Ensure pygame is initialized
+    if not pygame.get_init():
+        raise RuntimeError("Pygame is not initialized")
+    
+    # Get the game display surface
+    screen = pygame.display.get_surface()
+    if screen is None:
+        raise RuntimeError("Pygame display surface not available")
+    
+    # Calculate segment size once to avoid repetition
+    segment_width = game.window_size[0] // 30
+    segment_height = game.window_size[1] // 30
+    
+    # Clear the screen with black background
+    screen.fill(BLACK)
+    
+    # Guard clause - ensure snake has at least a head
+    if not snake.body:
+        pygame.display.flip()
+        return
+    
+    # Helper function to draw a rectangle
+    def draw_segment(position, color):
+        pygame.draw.rect(
+            screen, 
+            color, 
+            pygame.Rect(
+                position[0], 
+                position[1], 
+                segment_width,
+                segment_height
+            )
+        )
+    
+    # Draw the snake's head in dark green
+    head_position = snake.body[0]
+    draw_segment(head_position, DARK_GREEN)
+    
+    # Draw the snake's body in light green
+    for segment in snake.body[1:]:
+        draw_segment(segment, LIGHT_GREEN)
+    
+    # Draw the apple in red
+    draw_segment(apple.position, RED)
+    
+    # Update the display to show the new frame
+    pygame.display.flip()
+
+Tests:
+```python
+import unittest
+from unittest.mock import Mock, patch
+import pygame
+
+class TestRenderFunction(unittest.TestCase):
+
+    def setUp(self):
+        # Initialize pygame and create a mock display surface
+        pygame.init()
+        self.mock_screen = pygame.display.set_mode((300, 300))
+        self.addCleanup(pygame.quit)
+
+    def test_render_raises_error_if_pygame_not_initialized(self):
+        pygame.quit()  # Ensure pygame is not initialized
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        with self.assertRaises(RuntimeError) as context:
+            render(game, snake, apple)
+        
+        self.assertEqual(str(context.exception), "Pygame is not initialized")
+
+    def test_render_raises_error_if_display_surface_not_available(self):
+        pygame.display.quit()  # Ensure display surface is not available
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        with self.assertRaises(RuntimeError) as context:
+            render(game, snake, apple)
+        
+        self.assertEqual(str(context.exception), "Pygame display surface not available")
+
+    def test_render_clears_screen_with_black_background(self):
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        render(game, snake, apple)
+        
+        # Check if the screen was filled with black
+        self.assertEqual(self.mock_screen.get_at((0, 0)), (0, 0, 0, 255))
+
+    def test_render_draws_snake_head_in_dark_green(self):
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        render(game, snake, apple)
+        
+        # Check if the snake's head is drawn in dark green
+        self.assertEqual(self.mock_screen.get_at((10, 10)), (0, 100, 0, 255))
+
+    def test_render_draws_snake_body_in_light_green(self):
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10), (20, 20)])
+        apple = Mock(position=(50, 50))
+        
+        render(game, snake, apple)
+        
+        # Check if the snake's body is drawn in light green
+        self.assertEqual(self.mock_screen.get_at((20, 20)), (0, 255, 0, 255))
+
+    def test_render_draws_apple_in_red(self):
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        render(game, snake, apple)
+        
+        # Check if the apple is drawn in red
+        self.assertEqual(self.mock_screen.get_at((50, 50)), (255, 0, 0, 255))
+
+    def test_render_updates_display(self):
+        game = Mock(window_size=(300, 300))
+        snake = Mock(body=[(10, 10)])
+        apple = Mock(position=(50, 50))
+        
+        with patch('pygame.display.flip') as mock_flip:
+            render(game, snake, apple)
+            mock_flip.assert_called_once()
+
+if __name__ == '__main__':
+    unittest.main()
+```

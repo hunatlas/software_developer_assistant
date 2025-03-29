@@ -1,0 +1,117 @@
+Prefix:
+The `end_game` function is responsible for ending the game session by displaying the final score and closing the game window. It ensures that the score is valid, handles exceptions, and provides a brief pause for the player to view their score before closing the window.
+
+Imports:
+import pygame
+import time
+
+Code:
+    def end_game(self, score: int):
+        """
+        Ends the game and displays the final score.
+
+        Parameters:
+        score (int): The final score to be displayed.
+
+        Returns:
+        None
+        """
+        # Validate the score parameter
+        if not isinstance(score, int):
+            raise ValueError("Score must be an integer.")
+
+        # Display the final score
+        print(f"Game Over! Your final score is: {score}")
+
+        # Pause to allow the player to see the score
+        time.sleep(3)  # Pause for 3 seconds
+
+        # Ensure pygame is initialized before quitting
+        if pygame.get_init():
+            try:
+                # Close the game window
+                pygame.quit()
+            except Exception as e:
+                print(f"An error occurred while quitting pygame: {e}")
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch, MagicMock
+import pygame
+import time
+
+class TestEndGameFunction(unittest.TestCase):
+
+    def setUp(self):
+        # Initialize pygame for testing
+        pygame.init()
+
+    def tearDown(self):
+        # Quit pygame after each test
+        pygame.quit()
+
+    @patch('builtins.print')
+    @patch('time.sleep', return_value=None)
+    def test_end_game_valid_score(self, mock_sleep, mock_print):
+        # Test with a valid score
+        score = 100
+        self.end_game(score)
+        mock_print.assert_called_with(f"Game Over! Your final score is: {score}")
+        mock_sleep.assert_called_once_with(3)
+
+    def test_end_game_invalid_score(self):
+        # Test with an invalid score (non-integer)
+        with self.assertRaises(ValueError):
+            self.end_game("invalid_score")
+
+    @patch('pygame.quit')
+    @patch('builtins.print')
+    @patch('time.sleep', return_value=None)
+    def test_end_game_pygame_initialized(self, mock_sleep, mock_print, mock_quit):
+        # Test pygame quit when initialized
+        score = 50
+        self.end_game(score)
+        mock_quit.assert_called_once()
+
+    @patch('pygame.quit')
+    @patch('builtins.print')
+    @patch('time.sleep', return_value=None)
+    def test_end_game_pygame_not_initialized(self, mock_sleep, mock_print, mock_quit):
+        # Test pygame quit when not initialized
+        pygame.quit()  # Ensure pygame is not initialized
+        score = 75
+        self.end_game(score)
+        mock_quit.assert_not_called()
+
+    def end_game(self, score: int):
+        """
+        Ends the game and displays the final score.
+
+        Parameters:
+        score (int): The final score to be displayed.
+
+        Returns:
+        None
+        """
+        # Validate the score parameter
+        if not isinstance(score, int):
+            raise ValueError("Score must be an integer.")
+
+        # Display the final score
+        print(f"Game Over! Your final score is: {score}")
+
+        # Pause to allow the player to see the score
+        time.sleep(3)  # Pause for 3 seconds
+
+        # Ensure pygame is initialized before quitting
+        if pygame.get_init():
+            try:
+                # Close the game window
+                pygame.quit()
+            except Exception as e:
+                print(f"An error occurred while quitting pygame: {e}")
+
+if __name__ == '__main__':
+    unittest.main()
+```

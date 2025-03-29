@@ -1,0 +1,112 @@
+Prefix:
+This function initializes the Apple object by placing it at a random position within the game area, ensuring that the position is not occupied by the snake's body. The function takes the snake's body as input to avoid placing the apple on the snake.
+
+Imports:
+import random
+
+Code:
+class Apple:
+    """
+    Represents an apple in the game.
+    """
+    position: tuple[int, int]  # The position of the apple
+
+    def __init__(self, snake_body: list[tuple[int, int]]):
+        """
+        Initializes the apple at a random position not occupied by the snake.
+
+        :param snake_body: List of tuples representing the snake's body positions.
+        :raises ValueError: If the snake body is empty or occupies the entire game area.
+        """
+        if not snake_body:
+            raise ValueError("Snake body cannot be empty.")
+
+        self.position = self._generate_random_position(snake_body)
+
+    def _generate_random_position(self, snake_body: list[tuple[int, int]]) -> tuple[int, int]:
+        """
+        Generates a random position for the apple that is not occupied by the snake.
+
+        :param snake_body: List of tuples representing the snake's body positions.
+        :return: A tuple representing the new position of the apple.
+        :raises RuntimeError: If a valid position cannot be found within a reasonable number of attempts.
+        """
+        max_attempts = 1000
+        attempts = 0
+        game_area_size = 600
+        cell_size = 20
+        max_cells = (game_area_size // cell_size) ** 2
+
+        if len(snake_body) >= max_cells:
+            raise ValueError("Snake occupies the entire game area.")
+
+        while attempts < max_attempts:
+            # Generate a random position within the game area
+            x = random.randint(0, (game_area_size // cell_size) - 1) * cell_size
+            y = random.randint(0, (game_area_size // cell_size) - 1) * cell_size
+            position = (x, y)
+
+            # Ensure the position is not occupied by the snake
+            if position not in snake_body:
+                return position
+
+            attempts += 1
+
+        raise RuntimeError("Failed to find a valid position for the apple.")
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch
+from apple import Apple  # Assuming the class is in a file named apple.py
+
+class TestAppleInitialization(unittest.TestCase):
+
+    def test_apple_initialization_with_empty_snake_body_raises_value_error(self):
+        with self.assertRaises(ValueError) as context:
+            Apple([])
+        self.assertEqual(str(context.exception), "Snake body cannot be empty.")
+
+    def test_apple_initialization_with_full_game_area_raises_value_error(self):
+        game_area_size = 600
+        cell_size = 20
+        max_cells = (game_area_size // cell_size) ** 2
+        snake_body = [(x * cell_size, y * cell_size) for x in range(game_area_size // cell_size) for y in range(game_area_size // cell_size)]
+        
+        with self.assertRaises(ValueError) as context:
+            Apple(snake_body)
+        self.assertEqual(str(context.exception), "Snake occupies the entire game area.")
+
+    @patch('random.randint')
+    def test_apple_position_not_on_snake_body(self, mock_randint):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        mock_randint.side_effect = [3, 3]  # Mocking to return a position not in snake_body
+        apple = Apple(snake_body)
+        self.assertNotIn(apple.position, snake_body)
+
+    @patch('random.randint')
+    def test_apple_position_within_game_area(self, mock_randint):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        mock_randint.side_effect = [5, 5]  # Mocking to return a valid position
+        apple = Apple(snake_body)
+        x, y = apple.position
+        self.assertTrue(0 <= x < 600 and 0 <= y < 600)
+
+    @patch('random.randint')
+    def test_apple_position_after_multiple_attempts(self, mock_randint):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        # Mocking to first return positions occupied by the snake, then a valid one
+        mock_randint.side_effect = [0, 0, 1, 0, 2, 0, 3, 3]
+        apple = Apple(snake_body)
+        self.assertEqual(apple.position, (60, 60))
+
+    def test_runtime_error_when_no_valid_position_found(self):
+        snake_body = [(x, y) for x in range(0, 600, 20) for y in range(0, 600, 20)]
+        with patch('random.randint', side_effect=lambda *args: 0):
+            with self.assertRaises(RuntimeError) as context:
+                Apple(snake_body)
+            self.assertEqual(str(context.exception), "Failed to find a valid position for the apple.")
+
+if __name__ == '__main__':
+    unittest.main()
+```

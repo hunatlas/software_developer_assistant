@@ -1,0 +1,98 @@
+To improve the SRS and achieve a score of 5 for each trait, we need to address potential ambiguities, enhance clarity, ensure correctness, and improve verifiability. Below is the revised SRS:
+
+# Software Requirements Specification (SRS) for Snake Game
+
+## 1. Problem Background
+The Snake game is a classic arcade game where the player controls a snake to eat apples while avoiding collisions with the borders or itself. The objective is to consume as many apples as possible, which increases the snake's length and the game's difficulty. This SRS outlines the requirements for implementing the Snake game using Python and the pygame module.
+
+## 2. Stakeholders / Users
+- **Players**: Individuals who will play the game for entertainment.
+- **Developers**: Programmers responsible for implementing and maintaining the game.
+- **Testers**: Individuals who will test the game to ensure it meets the specified requirements.
+
+## 3. Functional Requirements
+1. **Implementation**: The game must be implemented using Python and the pygame module.
+2. **Game Area**: The game area must be a 600x600 pixel window.
+3. **Snake Initialization**: The snake must start with a head and one body part.
+4. **Game Start**: The game must start when the player presses the space button.
+5. **Snake Control**: The player must control the snake using the arrow keys (up, down, left, right).
+6. **Movement Constraints**: The snake must move in four directions: north, east, west, and south. It must not make 180-degree turns.
+7. **Apple Placement**: An apple must be randomly placed in the game area at the start and after each consumption. It must not appear on the snake's body.
+8. **Snake Growth**: The snake must grow by one unit each time it eats an apple.
+9. **Game Over Conditions**: The game must end if the snake collides with itself or the borders of the game area.
+10. **Game Options**: The game window must provide options to start a new game and exit the application.
+11. **Visual Design**: The game area must be black, the snake's head dark green, the body parts light green, and the apples red.
+
+## 4. Performance Requirements
+- The game must run at a consistent speed of 10 frames per second to ensure smooth gameplay.
+- The performance is measured by the number of apples consumed, which is recorded as the high score.
+
+## 5. Design Constraints
+- The game must be developed using Python and the pygame module.
+- The game window resolution must be 600x600 pixels.
+- The game should be designed to run on standard desktop environments with at least 2GB of RAM and a 1GHz processor.
+
+## 6. External Interfaces
+- **User Interface**: The game window displays the game area, snake, and apple. It includes options to start a new game and exit.
+- **Input Devices**: The keyboard is used for controlling the snake (arrow keys) and starting the game (space button).
+
+## 7. Security Requirements
+- The game must not require any network connectivity, minimizing security risks.
+- The game must handle unexpected inputs gracefully to prevent crashes.
+
+## 8. Use Cases for the Application
+
+### Use Case 1: Start Game
+1. **Actor**: Player
+2. **Purpose**: To initiate the game.
+3. **Event Flow**:
+   - The player opens the game application.
+   - The player presses the space button to start the game.
+   - The game initializes with a snake and a randomly placed apple.
+4. **Special or Exceptional Requirements**: None
+
+### Use Case 2: Control Snake
+1. **Actor**: Player
+2. **Purpose**: To navigate the snake around the game area.
+3. **Event Flow**:
+   - The player uses the arrow keys to change the snake's direction.
+   - The snake moves in the specified direction unless it results in a 180-degree turn.
+4. **Special or Exceptional Requirements**: The snake cannot make 180-degree turns.
+
+### Use Case 3: Eat Apple
+1. **Actor**: Player
+2. **Purpose**: To increase the snake's length and score.
+3. **Event Flow**:
+   - The snake moves over an apple.
+   - The apple is consumed, and the snake grows by one unit.
+   - A new apple appears randomly in the game area, not on the snake.
+4. **Special or Exceptional Requirements**: None
+
+### Use Case 4: End Game
+1. **Actor**: Player
+2. **Purpose**: To conclude the game session.
+3. **Event Flow**:
+   - The snake collides with itself or the border.
+   - The game ends, and the player's score is displayed.
+4. **Special or Exceptional Requirements**: None
+
+### Use Case 5: Exit Game
+1. **Actor**: Player
+2. **Purpose**: To close the game application.
+3. **Event Flow**:
+   - The player selects the exit option from the game window.
+   - The game application closes.
+4. **Special or Exceptional Requirements**: None
+
+## 9. Glossary of Terms
+- **Snake**: The player's character in the game, which grows in length by consuming apples.
+- **Apple**: The item the snake consumes to grow and increase the score.
+- **Game Area**: The 600x600 pixel window where the game takes place.
+- **Pygame**: A Python library used for writing video games.
+- **180-degree Turn**: A direct reversal of direction, which is not allowed for the snake.
+
+### Improvements Made:
+- **Unambiguity**: Clarified requirements to ensure only one possible interpretation, such as specifying the frame rate for consistent speed.
+- **Understandability**: Simplified language and added specific details to make the requirements easily comprehensible.
+- **Correctness**: Ensured all requirements accurately represent the intended features and functions.
+- **Verifiability**: Provided specific, measurable criteria for verifying each requirement, such as the frame rate and system specifications.

@@ -1,0 +1,162 @@
+Prefix:
+This function moves the snake in its current direction by updating its body positions. It calculates the new head position based on the current direction, adds this new position to the snake's body, and removes the last segment of the body to simulate movement. The snake's body is always maintained with at least one segment (the head).
+
+Imports:
+from typing import List, Tuple
+
+Code:
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+    
+    def __init__(self, initial_position: Tuple[int, int]):
+        """
+        Initializes the snake with a starting position and direction.
+        """
+        self.body: List[Tuple[int, int]] = [initial_position]
+        self.direction: str = 'E'  # Default direction is East
+
+    def set_direction(self, new_direction: str) -> None:
+        """
+        Sets the direction of the snake, ensuring it is valid.
+        """
+        valid_directions = {'N', 'E', 'S', 'W'}
+        if new_direction in valid_directions:
+            self.direction = new_direction
+        else:
+            raise ValueError("Invalid direction")
+
+    def move(self) -> None:
+        """
+        Moves the snake in the current direction.
+        """
+        # Mapping of directions to coordinate changes
+        direction_map = {
+            'N': (0, -1),
+            'E': (1, 0),
+            'S': (0, 1),
+            'W': (-1, 0)
+        }
+
+        # Calculate new head position based on current direction
+        head_x, head_y = self.body[0]
+        delta_x, delta_y = direction_map[self.direction]
+        new_head = (head_x + delta_x, head_y + delta_y)
+
+        # Add new head position to the body
+        self.body.insert(0, new_head)
+
+        # Remove the last segment of the body
+        if len(self.body) > 1:
+            self.body.pop()
+
+# Example usage
+snake = Snake((5, 5))
+snake.set_direction('N')
+snake.move()  # Moves the snake north
+print(snake.body)  # Output: [(5, 4)]
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch
+from typing import List, Tuple
+
+class Snake:
+    """
+    Represents the snake in the game.
+    """
+    
+    def __init__(self, initial_position: Tuple[int, int]):
+        """
+        Initializes the snake with a starting position and direction.
+        """
+        self.body: List[Tuple[int, int]] = [initial_position]
+        self.direction: str = 'E'  # Default direction is East
+
+    def set_direction(self, new_direction: str) -> None:
+        """
+        Sets the direction of the snake, ensuring it is valid.
+        """
+        valid_directions = {'N', 'E', 'S', 'W'}
+        if new_direction in valid_directions:
+            self.direction = new_direction
+        else:
+            raise ValueError("Invalid direction")
+
+    def move(self) -> None:
+        """
+        Moves the snake in the current direction.
+        """
+        # Mapping of directions to coordinate changes
+        direction_map = {
+            'N': (0, -1),
+            'E': (1, 0),
+            'S': (0, 1),
+            'W': (-1, 0)
+        }
+
+        # Calculate new head position based on current direction
+        head_x, head_y = self.body[0]
+        delta_x, delta_y = direction_map[self.direction]
+        new_head = (head_x + delta_x, head_y + delta_y)
+
+        # Add new head position to the body
+        self.body.insert(0, new_head)
+
+        # Remove the last segment of the body
+        if len(self.body) > 1:
+            self.body.pop()
+
+class TestSnake(unittest.TestCase):
+
+    def test_initial_position(self):
+        snake = Snake((5, 5))
+        self.assertEqual(snake.body, [(5, 5)])
+
+    def test_default_direction(self):
+        snake = Snake((5, 5))
+        self.assertEqual(snake.direction, 'E')
+
+    def test_set_valid_direction(self):
+        snake = Snake((5, 5))
+        snake.set_direction('N')
+        self.assertEqual(snake.direction, 'N')
+
+    def test_set_invalid_direction_raises_value_error(self):
+        snake = Snake((5, 5))
+        with self.assertRaises(ValueError):
+            snake.set_direction('A')
+
+    def test_move_east(self):
+        snake = Snake((5, 5))
+        snake.move()
+        self.assertEqual(snake.body, [(6, 5)])
+
+    def test_move_north(self):
+        snake = Snake((5, 5))
+        snake.set_direction('N')
+        snake.move()
+        self.assertEqual(snake.body, [(5, 4)])
+
+    def test_move_south(self):
+        snake = Snake((5, 5))
+        snake.set_direction('S')
+        snake.move()
+        self.assertEqual(snake.body, [(5, 6)])
+
+    def test_move_west(self):
+        snake = Snake((5, 5))
+        snake.set_direction('W')
+        snake.move()
+        self.assertEqual(snake.body, [(4, 5)])
+
+    def test_snake_body_length_maintained(self):
+        snake = Snake((5, 5))
+        snake.move()
+        self.assertEqual(len(snake.body), 1)
+
+if __name__ == '__main__':
+    unittest.main()
+```

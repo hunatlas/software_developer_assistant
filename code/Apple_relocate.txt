@@ -1,0 +1,86 @@
+Prefix:
+This function relocates the apple to a new random position within the game area, ensuring that the new position is not occupied by the snake's body.
+
+Imports:
+import random
+
+Code:
+class Apple:
+    """
+    Represents an apple in the game.
+    """
+    position: tuple[int, int]  # The position of the apple
+
+    def __init__(self, snake_body: list[tuple[int, int]]):
+        """
+        Initializes the apple at a random position not occupied by the snake.
+        """
+        self.relocate(snake_body)
+
+    def relocate(self, snake_body: list[tuple[int, int]]):
+        """
+        Relocates the apple to a new random position not occupied by the snake.
+
+        :param snake_body: List of tuples representing the snake's body positions.
+        """
+        max_x, max_y = 600, 600  # Assuming the game area is 600x600
+        grid_size = 20  # Assuming each grid cell is 20x20 pixels
+
+        # Calculate possible positions
+        possible_positions = [
+            (x, y)
+            for x in range(0, max_x, grid_size)
+            for y in range(0, max_y, grid_size)
+        ]
+
+        # Remove positions occupied by the snake
+        available_positions = [pos for pos in possible_positions if pos not in snake_body]
+
+        # Randomly select a new position from available positions
+        if available_positions:
+            self.position = random.choice(available_positions)
+        else:
+            raise ValueError("No available positions to place the apple.")
+
+Tests:
+```python
+import unittest
+from unittest.mock import patch
+from apple import Apple  # Assuming the class is in a file named apple.py
+
+class TestApple(unittest.TestCase):
+
+    def test_apple_initialization_with_empty_snake(self):
+        snake_body = []
+        apple = Apple(snake_body)
+        self.assertIn(apple.position, [(x, y) for x in range(0, 600, 20) for y in range(0, 600, 20)])
+
+    def test_apple_initialization_with_snake_body(self):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        apple = Apple(snake_body)
+        self.assertNotIn(apple.position, snake_body)
+
+    def test_apple_relocation_to_new_position(self):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        apple = Apple(snake_body)
+        initial_position = apple.position
+        apple.relocate(snake_body)
+        self.assertNotEqual(apple.position, initial_position)
+        self.assertNotIn(apple.position, snake_body)
+
+    def test_apple_relocation_with_full_snake(self):
+        snake_body = [(x, y) for x in range(0, 600, 20) for y in range(0, 600, 20)]
+        apple = Apple(snake_body)
+        with self.assertRaises(ValueError):
+            apple.relocate(snake_body)
+
+    @patch('random.choice')
+    def test_apple_relocation_random_choice_called(self, mock_choice):
+        snake_body = [(0, 0), (20, 0), (40, 0)]
+        apple = Apple(snake_body)
+        apple.relocate(snake_body)
+        self.assertTrue(mock_choice.called)
+
+if __name__ == '__main__':
+    unittest.main()
+```
